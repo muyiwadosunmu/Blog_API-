@@ -2,8 +2,22 @@ from pydantic import BaseModel
 
 
 class Post(BaseModel):
-    title:str
-    body:str
+    id: int
+    title: str
+    body: str
+
+
+class ShowPost(BaseModel):
+    title: str
+    body: str
 
     class Config:
-        orm_mode=True
+        orm_mode = True
+
+class User(BaseModel):
+    name:str
+    email:str
+    password:str
+
+    class Config:
+        orm_mode = True
