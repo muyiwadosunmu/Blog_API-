@@ -30,7 +30,7 @@ def create_post(
     return new_post
 
 
-@app.get("/post/{post_id}", status_code=status.HTTP_200_OK)
+@app.get("/post/{post_id}", status_code=status.HTTP_200_OK, response_model=schemas.ShowPost)
 def read_a_posts(post_id: int, db: Session = Depends(get_db)):
     posts = db.query(models.Post).filter(models.Post.id == post_id).first()
     if not posts:
@@ -68,7 +68,7 @@ def update_post(post_id: int, request: schemas.Post, db: Session = Depends(get_d
     return "Post Updated Successfully"
 
 
-@app.get("/posts", response_model=list[schemas.Post], status_code=status.HTTP_200_OK)
+@app.get("/posts", response_model=list[schemas.ShowPost], status_code=status.HTTP_200_OK)
 def read_posts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     posts = db.query(models.Post).offset(skip).limit(limit).all()
     return posts
