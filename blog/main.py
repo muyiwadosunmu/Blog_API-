@@ -1,38 +1,32 @@
 from fastapi import FastAPI, status, HTTPException, Depends
 from . import schemas, models
 from sqlalchemy.orm import Session
-from .database import SessionLocal, engine
+from .database import engine, get_db 
+from  .routers import post, user
 from blog import database
 from . hashing import Hash
+from .routers import post, user
 
 
-app = FastAPI()
-
-models.Base.metadata.create_all(bind=engine)
+app = FastAPI() 
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
+app.include_router(post.router)
+
+models.Base.metadata.create_all(engine)
+
+get_db = database.get_db
 
 
-@app.post("/post",tags=["posts"], status_code=status.HTTP_201_CREATED)
-def create_post(
-    request: schemas.Post,
-    db: Session = Depends(get_db),
-):
-    new_post = models.Post(title=request.title, body=request.body, user_id=1)
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-    return new_post
+
 
 
 @app.get(
-    "/post/{post_id}", tags=["posts"],status_code=status.HTTP_200_OK, response_model=schemas.ShowPost
+    "/post/{post_id}",
+    tags=["posts"],
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.ShowPost,
 )
 def read_a_posts(post_id: int, db: Session = Depends(get_db)):
     posts = db.query(models.Post).filter(models.Post.id == post_id).first()
@@ -44,7 +38,9 @@ def read_a_posts(post_id: int, db: Session = Depends(get_db)):
     return posts
 
 
-@app.delete("/post/{post_id}",tags=["posts"], status_code=status.HTTP_204_NO_CONTENT)
+@app.delete(
+    "/post/{post_id}", tags=["posts"], status_code=status.HTTP_204_NO_CONTENT
+)
 def delete_post(post_id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == post_id)
     if not post.first():
@@ -56,7 +52,7 @@ def delete_post(post_id: int, db: Session = Depends(get_db)):
     return "Post deleted"
 
 
-@app.put("/post/{post_id}",tags=["posts"], status_code=status.HTTP_202_ACCEPTED)
+@app.post("/post/{post_id}", tags=["posts"], status_code=status.HTTP_202_ACCEPTED)
 def update_post(post_id: int, request: schemas.Post, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == post_id)
     if not post.first():
@@ -69,15 +65,12 @@ def update_post(post_id: int, request: schemas.Post, db: Session = Depends(get_d
     return "Post Updated Successfully"
 
 
-@app.get(
-    "/posts", tags=["posts"], response_model=list[schemas.ShowPost], status_code=status.HTTP_200_OK
+@app.post(
+    "/user",
+    tags=["users"],
+    response_model=schemas.ShowUser,
+    status_code=status.HTTP_201_CREATED,
 )
-def read_posts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    posts = db.query(models.Post).offset(skip).limit(limit).all()
-    return posts
-
-
-@app.post("/user",tags=["users"], response_model=schemas.ShowUser, status_code=status.HTTP_201_CREATED)
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
 
     new_user = models.User(

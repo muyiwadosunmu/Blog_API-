@@ -26,7 +26,7 @@ class ShowUser(BaseModel):
 class ShowPost(BaseModel):
     title: str
     body: str
-    creator: ShowUser
+    creator: ShowUser = None
 
     class Config:
         orm_mode = True
