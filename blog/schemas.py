@@ -1,16 +1,22 @@
+from typing import List
 from pydantic import BaseModel
 
 
-class Post(BaseModel):
+class PostBase(BaseModel):
     title: str
     body: str
 
     class Config:
         orm_mode = True
 
+class Post(PostBase):
+    class Config:
+        orm_mode = True
+
 class ShowUser(BaseModel):
     name: str
     email: str
+    posts : List[Post] =[]
 
     class Config:
         orm_mode = True
