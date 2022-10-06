@@ -3,23 +3,23 @@ from typing import List
 from fastapi import APIRouter, status, Depends, HTTPException
 from .. import schemas, models, database
 from sqlalchemy.orm import Session
+from ..repository import post
 
-
-router = APIRouter()
+router = APIRouter(
+    
+    tags=["Posts"]
+)
 get_db = database.get_db
 
 @router.get(
     "/posts",
-    tags=["posts"],
     response_model=List[schemas.ShowPost],
     status_code=status.HTTP_200_OK,
 )
 def read_posts(db: Session = Depends(database.get_db)):
-    posts = db.query(models.Post).all()
-    return posts
+    return post.get_all_post(db)
 
-
-@router.post("/post", tags=["posts"], status_code=status.HTTP_201_CREATED)
+@router.post("/post", status_code=status.HTTP_201_CREATED)
 def create_post(
     request: schemas.Post,
     db: Session = Depends(get_db),
@@ -32,7 +32,7 @@ def create_post(
 
 
 @router.delete(
-    "/post/{post_id}", tags=["posts"], status_code=status.HTTP_204_NO_CONTENT
+    "/post/{post_id}", status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_post(post_id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == post_id)
@@ -45,7 +45,7 @@ def delete_post(post_id: int, db: Session = Depends(get_db)):
     return "Post deleted"
 
 
-@router.put("/post/{post_id}", tags=["posts"], status_code=status.HTTP_202_ACCEPTED)
+@router.put("/post/{post_id}", status_code=status.HTTP_202_ACCEPTED)
 def update_post(post_id: int, request: schemas.Post, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == post_id)
     if not post.first():
@@ -60,7 +60,6 @@ def update_post(post_id: int, request: schemas.Post, db: Session = Depends(get_d
 
 @router.get(
     "/post/{post_id}",
-    tags=["posts"],
     status_code=status.HTTP_200_OK,
     response_model=schemas.ShowPost,
 )
