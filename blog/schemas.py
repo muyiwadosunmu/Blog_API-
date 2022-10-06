@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 
@@ -16,7 +16,7 @@ class Post(PostBase):
 class ShowUser(BaseModel):
     name: str
     email: str
-    posts : List[Post] =[]
+    posts : list[Post]
 
     class Config:
         orm_mode = True
@@ -26,7 +26,6 @@ class ShowUser(BaseModel):
 class ShowPost(BaseModel):
     title: str
     body: str
-    creator: ShowUser = None
 
     class Config:
         orm_mode = True
