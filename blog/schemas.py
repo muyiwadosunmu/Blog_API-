@@ -26,7 +26,7 @@ class ShowUser(BaseModel):
 class ShowPost(BaseModel):
     title: str
     body: str
-    creator: ShowUser 
+    creator: ShowUser = None
 
     class Config:
         orm_mode = True
@@ -50,4 +50,4 @@ class Token(BaseModel):
     token_type:str
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    email: Optional[str] = None
