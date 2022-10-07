@@ -25,27 +25,12 @@ def create_post(request: schemas.Post, db: Session = Depends(get_db)):
 
 @router.delete("/post/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(post_id: int, db: Session = Depends(get_db)):
-    post = db.query(models.Post).filter(models.Post.id == post_id)
-    if not post.first():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Content not found in DB"
-        )
-    post.delete(synchronize_session=False)
-    db.commit()
-    return "Post deleted"
+    return post.delete_a_post(post_id,db)
 
 
 @router.put("/post/{post_id}", status_code=status.HTTP_202_ACCEPTED)
 def update_post(post_id: int, request: schemas.Post, db: Session = Depends(get_db)):
-    post = db.query(models.Post).filter(models.Post.id == post_id)
-    if not post.first():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post with {post_id} not found",
-        )
-    post.update(dict(request))
-    db.commit()
-    return "Post Updated Successfully"
+    return post.update_a_post(post_id, request, db)
 
 
 @router.get(
@@ -54,10 +39,4 @@ def update_post(post_id: int, request: schemas.Post, db: Session = Depends(get_d
     response_model=schemas.ShowPost,
 )
 def read_a_post(post_id: int, db: Session = Depends(get_db)):
-    posts = db.query(models.Post).filter(models.Post.id == post_id).first()
-    if not posts:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Blog with {post_id} not found",
-        )
-    return posts
+    return post.show_a_post(id, db)
