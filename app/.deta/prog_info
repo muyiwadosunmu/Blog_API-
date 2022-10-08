@@ -1,1 +1,1 @@
-{"id":"b143e880-a8ac-4e75-be78-79af0a36b1c8","space":33790,"runtime":"python3.9","name":"app","path":"n9mynp","project":"a0rz56du","account":"144798365827","region":"eu-central-1","deps":null,"envs":null,"public":true,"log_level":"off","cron":""}
+{"id":"fc31b955-8fed-4ba9-92d7-eda46f5e8247","space":33790,"runtime":"python3.9","name":"app","path":"1atudg","project":"a0rz56du","account":"144798365827","region":"eu-central-1","deps":["fastapi","uvicorn","SQLAlchemy","passlib","bcrypt","python-jose","python-multipart"],"envs":null,"public":true,"log_level":"off","cron":""}
